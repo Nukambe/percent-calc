@@ -27,6 +27,27 @@
 
         form {
             margin-bottom: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        form div {
+            display: flex;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        form button {
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            padding: 2px 16px;
+            font-weight: bold;
+        }
+
+        #kg-button {
+            border-right: 1px solid #ccc;
         }
 
         input {
@@ -34,6 +55,13 @@
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 5px;
+        }
+
+        #unit {
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            margin-right: 16px;
         }
 
         table {
@@ -68,15 +96,23 @@
         }
 
         tbody tr:hover {
-            background-color: #f0f0f0;
+            background-color: #B0C4DE;
         }
     </style>
 
     <body>
         <h1>Percentage Calculator</h1>
         <form action="#" method="#">
-            <input type="number" name="kg-input" id="kg-input" placeholder="Input" value="87">
-            kg
+            <input type="number" name="kg-input" id="kg-input" placeholder="Input" value="87"><small
+                id="unit">kg</small>
+            <div>
+                <button type="button" id="kg-button">
+                    <small>kg</small>
+                </button>
+                <button type="button" id="lb-button">
+                    <small>lb</small>
+                </button>
+            </div>
         </form>
         <table>
             <caption>
@@ -100,10 +136,28 @@
 
     <script>
         const kgInput = document.querySelector('#kg-input');
+        const kgButton = document.querySelector('#kg-button');
+        const lbButton = document.querySelector('#lb-button');
+        const unitText = document.querySelector('#unit');
         const table = document.querySelector('tbody');
 
-        let kg = Number(kgInput.value);
-        let lb = kg * 2.20462;
+        let unit = true;
+        let kg = unit ? Number(kgInput.value) : Number(kgInput.value) / 2.20462;
+        let lb = unit ? kg * 2.20462 : Number(kgInput.value);
+
+        const setUnits = () => {
+            if (unit) {
+                kg = Number(kgInput.value);
+                lb = kg * 2.20462;
+                kgButton.style.backgroundColor = '#90EE90';
+                lbButton.style.backgroundColor = '#F08080';
+            } else {
+                lb = Number(kgInput.value);
+                kg = lb / 2.20462;
+                lbButton.style.backgroundColor = '#90EE90';
+                kgButton.style.backgroundColor = '#F08080';
+            }
+        };
 
         const shouldFix = (value) => {
             // if (value % 2 === 0) return value;
@@ -111,6 +165,8 @@
         };
 
         const fillTable = () => {
+            setUnits();
+            table.innerHTML = '';
             for (let i = 1; i < 31; i++) {
                 const tr = document.createElement('tr');
 
@@ -136,11 +192,18 @@
         };
 
         kgInput.addEventListener('input', () => {
-            kg = Number(kgInput.value);
-            lb = kg * 2.20462;
+            fillTable();
+        });
 
-            table.innerHTML = '';
+        kgButton.addEventListener('click', () => {
+            unit = true;
+            unitText.textContent = 'kg';
+            fillTable();
+        });
 
+        lbButton.addEventListener('click', () => {
+            unit = false;
+            unitText.textContent = 'lb';
             fillTable();
         });
 
